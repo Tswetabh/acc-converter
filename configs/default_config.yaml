@@ -1,0 +1,56 @@
+audio:
+  sample_rate: 16000
+  channels: 1
+  chunk_ms: 80
+
+streaming:
+  lookback_ms: 640    # 8 frames × 80 ms
+  lookahead_ms: 0
+
+runtime:
+  device: cpu
+
+# ---------------------------------------------------------------------------
+# Model backends
+# ---------------------------------------------------------------------------
+# The pipeline reads these keys and uses the factory to instantiate models.
+# Only change 'backend' and 'checkpoint' here — no pipeline code changes needed.
+
+synthesis:
+  backend: vocoder        # options: vocoder | tvtsyn
+  checkpoint: null        # set to checkpoint path when available
+
+models:
+  content_encoder:
+    backend: hubert
+    checkpoint: null
+
+  speaker_encoder:
+    backend: ecapa
+    checkpoint: null
+
+  accent_translator:
+    backend: naive        # passthrough stub; replace in Phase 6
+    checkpoint: null
+    target_accent: us     # options: us | uk | neutral
+
+# ---------------------------------------------------------------------------
+# Audio preprocessing (Phase 3)
+# ---------------------------------------------------------------------------
+# Each component is independently configurable.
+# Set backend: null to disable a component (not yet supported — stub always on).
+
+preprocessing:
+  vad:
+    backend: silero       # options: silero | energy
+    threshold: 0.5        # probability threshold in [0.0, 1.0] (default: 0.5)
+    hangover_frames: 8    # frames to hold speech label after last detection
+                          #   8 × 80 ms = 640 ms
+
+  noise_suppressor:
+    backend: noisereduce  # options: noisereduce
+    stationary: false     # true = faster; false = adaptive non-stationary
+    prop_decrease: 1.0    # proportion of noise to remove (0.0–1.0)
+
+  aec:
+    backend: passthrough  # real AEC via browser WebRTC (Phase 11)

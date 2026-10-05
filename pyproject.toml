@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "accent_converter"
+version = "0.1.0"
+description = "Real-time AI Accent Converter"
+authors = [
+    { name="Author", email="author@example.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",   # resample_poly for audio resampling (Phase 2)
+    "torch>=2.0",          # ML inference engine (Phase 4)
+    "transformers>=4.30",  # HuggingFace HuBERT model (Phase 4)
+    "pyyaml>=6.0",         # YAML config loading (Phase 4)
+    "noisereduce>=3.0",    # spectral-gating noise suppression (Phase 3)
+    "speechbrain>=1.0",    # ECAPA-TDNN speaker encoder (Phase 5)
+    "silero-vad>=6.0",     # neural Voice Activity Detection (Silero VAD)
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "scipy>=1.10",
+]
