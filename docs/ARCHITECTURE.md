@@ -140,12 +140,14 @@ src/accent_converter/audio/
 | 4 | Content encoder (HuBERT offline ref) | ✅ Complete |
 | 5 | Speaker encoder (ECAPA-TDNN) | ✅ Complete |
 | 6A | Offline pipeline smoke test | ✅ Complete |
-| 6B | Real accent conversion baseline | ⬜ Next |
-| 7 | Streaming content encoder | ⬜ Not started |
-| 8 | Speech synthesis backend (Acoustic bridge + Vocoder) | ⬜ Not started |
-| 9 | Streaming accent translator | ⬜ Not started |
-| 10 | Real-time audio engine | ⬜ Not started |
-| 11 | End-to-end voice conversion pipeline | ⬜ Not started |
+| 6B | Real acoustic decoder & HiFi-GAN baseline | ✅ Complete |
+| 6C | Dataset curation & full DTW alignment (3,848 pairs) | ✅ Complete |
+| 6D | Conformer Accent Translator training | ✅ Complete |
+| 7 | Streaming content encoder (Causal TVTSyn / chunked HuBERT) | ⬜ Next |
+| 8 | Causal speech synthesis backend | ⬜ Pending Phase 7 |
+| 9 | Streaming accent translator inference | ⬜ Pending Phase 7 |
+| 10 | Real-time concurrent audio engine (ring buffers, queues) | ⬜ Pending Phase 8 |
+| 11 | Browser Web Studio & WebRTC transport | 🔄 In Progress (Studio UI live) |
 
 ---
 

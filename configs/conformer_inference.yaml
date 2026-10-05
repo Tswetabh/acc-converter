@@ -1,0 +1,43 @@
+audio:
+  sample_rate: 16000
+  channels: 1
+  chunk_ms: 80
+
+streaming:
+  lookback_ms: 640
+  lookahead_ms: 0
+
+runtime:
+  device: cuda:0
+
+synthesis:
+  backend: vocoder
+  checkpoint: checkpoints/acoustic_decoder/best.pt
+
+models:
+  content_encoder:
+    backend: hubert
+    checkpoint: null
+
+  speaker_encoder:
+    backend: ecapa
+    checkpoint: null
+
+  accent_translator:
+    backend: conformer
+    checkpoint: checkpoints/accent_translator/best.pt
+    target_accent: us
+
+preprocessing:
+  vad:
+    backend: silero
+    threshold: 0.5
+    hangover_frames: 8
+
+  noise_suppressor:
+    backend: noisereduce
+    stationary: false
+    prop_decrease: 1.0
+
+  aec:
+    backend: passthrough

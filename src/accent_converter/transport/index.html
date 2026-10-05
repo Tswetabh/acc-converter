@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accent Converter Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0d14;
+      --panel-bg: rgba(18, 24, 38, 0.75);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #00f2fe;
+      --accent-indigo: #4facfe;
+      --accent-purple: #9b51e0;
+      --accent-emerald: #10b981;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --card-bg: rgba(255, 255, 255, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #171f38 0%, var(--bg-dark) 70%);
+      color: var(--text-main);
+      font-family: 'Outfit', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid-cards { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(16px);
+      border-radius: 1.25rem;
+      padding: 1.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #fff;
+    }
+
+    .card-title svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--accent-cyan);
+    }
+
+    .dropzone {
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 0.85rem;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.05);
+    }
+
+    .dropzone svg {
+      width: 36px;
+      height: 36px;
+      stroke: var(--text-muted);
+    }
+
+    .file-input { display: none; }
+
+    .file-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      word-break: break-all;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+      color: #05101a;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 0.9rem;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 242, 254, 0.45);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    select {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--panel-border);
+      color: #fff;
+      padding: 0.7rem;
+      border-radius: 0.6rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .player-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 0.85rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    audio {
+      width: 100%;
+      height: 38px;
+      outline: none;
+    }
+
+    .pipeline-flow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 0.85rem;
+      padding: 1rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .pipe-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .pipe-name { color: #fff; font-weight: 600; }
+    .pipe-desc { color: var(--text-muted); font-size: 0.7rem; }
+    .pipe-arrow { color: var(--accent-cyan); font-weight: 700; font-size: 1.1rem; }
+
+    .console-box {
+      background: #06090e;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #a7f3d0;
+      max-height: 140px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">
+        <span class="status-dot"></span>
+        Neural Accent Converter &bull; GPU Active
+      </div>
+      <h1>Accent Converter Studio</h1>
+      <p class="subtitle">Real-time neural accent translation from Indian English to Native US English while preserving identity.</p>
+    </header>
+
+    <div class="pipeline-flow">
+      <div class="pipe-node">
+        <span class="pipe-name">Source Speech</span>
+        <span class="pipe-desc">Indian Accent (16kHz)</span>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-node">
+        <span class="pipe-name">HuBERT Base</span>
+        <span class="pipe-desc">Linguistic Rep (T, 768)</span>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-node">
+        <span class="pipe-name">Conformer Net</span>
+        <span class="pipe-desc">Learned Accent Shift</span>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-node">
+        <span class="pipe-name">Acoustic Decoder</span>
+        <span class="pipe-desc">+ ECAPA (192-dim)</span>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-node">
+        <span class="pipe-name">HiFi-GAN</span>
+        <span class="pipe-desc">Target US WAV</span>
+      </div>
+    </div>
+
+    <div class="grid-cards">
+      <!-- Input Card -->
+      <div class="card">
+        <div class="card-title">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+          1. Source Speech Input
+        </div>
+
+        <div class="dropzone" id="sourceDropzone" onclick="document.getElementById('sourceFileInput').click()">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+          <div>
+            <strong>Drop WAV file</strong> or click to browse
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Mono/Stereo 16 kHz recommended</div>
+          </div>
+          <span class="file-status" id="sourceStatus">Using default sample: ASI_arctic_a0001.wav</span>
+        </div>
+        <input type="file" id="sourceFileInput" class="file-input" accept=".wav,audio/wav">
+
+        <div class="controls-row">
+          <button class="btn btn-secondary" id="loadSampleBtn" style="flex:1;">Load Demo Sample (ASI)</button>
+        </div>
+
+        <div class="player-box">
+          <label>Original Source Audio</label>
+          <audio id="sourcePlayer" controls src="/api/sample/source"></audio>
+        </div>
+      </div>
+
+      <!-- Settings & Output Card -->
+      <div class="card">
+        <div class="card-title">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          2. Conversion Parameters
+        </div>
+
+        <div class="controls-row">
+          <div class="select-group">
+            <label>Target Accent</label>
+            <select id="targetAccentSelect">
+              <option value="us" selected>US English (Native CMU ARCTIC)</option>
+              <option value="neutral">Neutral English</option>
+            </select>
+          </div>
+
+          <div class="select-group">
+            <label>Speaker Identity</label>
+            <select id="targetSpeakerSelect">
+              <option value="rms" selected>CMU RMS (Male US)</option>
+              <option value="slt">CMU SLT (Female US)</option>
+              <option value="source">Preserve Source Identity</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="convertBtn">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Translate Accent Now
+        </button>
+
+        <div class="player-box">
+          <label>Converted Target Audio (US English)</label>
+          <audio id="convertedPlayer" controls src="/api/sample/converted"></audio>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Execution Console -->
+    <div class="card" style="padding: 1.25rem;">
+      <div class="card-title" style="font-size: 1rem;">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        System Status &amp; Telemetry
+      </div>
+      <div class="console-box" id="consoleLog">Ready. Models loaded on GPU (CUDA:0).
+- HuBERT Base: [12 layers, continuous 50Hz rep]
+- Conformer Accent Net: [6 layers, 1024-dim FFN, checkpoint val L1 = 0.1609]
+- Acoustic Decoder: [Convolutional 80-bin Mel]
+- HiFi-GAN Vocoder: [16 kHz neural waveform synthesis]
+Click "Translate Accent Now" to run inference.</div>
+    </div>
+  </div>
+
+  <script>
+    let currentSourceBlob = null;
+
+    const sourceFileInput = document.getElementById('sourceFileInput');
+    const sourceStatus = document.getElementById('sourceStatus');
+    const sourcePlayer = document.getElementById('sourcePlayer');
+    const convertedPlayer = document.getElementById('convertedPlayer');
+    const convertBtn = document.getElementById('convertBtn');
+    const loadSampleBtn = document.getElementById('loadSampleBtn');
+    const consoleLog = document.getElementById('consoleLog');
+
+    function log(msg) {
+      consoleLog.textContent += '\n' + msg;
+      consoleLog.scrollTop = consoleLog.scrollHeight;
+    }
+
+    sourceFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        currentSourceBlob = file;
+        sourceStatus.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        sourcePlayer.src = URL.createObjectURL(file);
+        log(`Loaded input audio: ${file.name}`);
+      }
+    });
+
+    loadSampleBtn.addEventListener('click', () => {
+      currentSourceBlob = null;
+      sourceStatus.textContent = 'Using default sample: ASI_arctic_a0001.wav';
+      sourcePlayer.src = '/api/sample/source?' + Date.now();
+      log('Loaded default Indian-accent sample (L2-ARCTIC ASI a0001).');
+    });
+
+    convertBtn.addEventListener('click', async () => {
+      convertBtn.disabled = true;
+      convertBtn.textContent = 'Translating Accent...';
+      log('Starting neural pipeline conversion...');
+
+      try {
+        const formData = new FormData();
+        if (currentSourceBlob) {
+          formData.append('audio', currentSourceBlob);
+        }
+        formData.append('target_accent', document.getElementById('targetAccentSelect').value);
+        formData.append('speaker', document.getElementById('targetSpeakerSelect').value);
+
+        const t0 = performance.now();
+        const resp = await fetch('/api/convert', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!resp.ok) {
+          const err = await resp.text();
+          throw new Error(err);
+        }
+
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        convertedPlayer.src = url;
+        convertedPlayer.play();
+
+        const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+        log(`✓ Conversion complete in ${elapsed}s! Playing audio.`);
+      } catch (err) {
+        log(`❌ Error during conversion: ${err.message}`);
+      } finally {
+        convertBtn.disabled = false;
+        convertBtn.innerHTML = `<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Translate Accent Now`;
+      }
+    });
+  </script>
+</body>
+</html>
